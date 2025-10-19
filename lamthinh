@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Quay May Mắn - Phiên bản Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .wheel-container {
+            flex: 1;
+            min-width: 400px;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .wheel-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff5252, #ff9800, #ffeb3b, #4caf50, 
+                #2196f3, #9c27b0, #ff5252
+            );
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 0 10px #ffd700, 0 0 30px rgba(255, 215, 0, 0.7);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.16, 0.99);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: #ffd700;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 60px;
+            background: #ff5252;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 5;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        }
+
+        .wheel-item {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom left;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-item-content {
+            transform: rotate(90deg);
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            width: 100px;
+            padding: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .spin-btn {
+            background: linear-gradient(to right, #ff5252, #ff9800);
+            color: white;
+        }
+
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .reset-btn {
+            background: linear-gradient(to right, #2196f3, #21cbf3);
+            color: white;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .participants-container {
+            flex: 1;
+            min-width: 350px;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .participants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .participants-header h2 {
+            font-size: 1.8rem;
+            color: #ffd700;
+        }
+
+        .timer {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer span {
+            color: #ffd700;
+        }
+
+        .add-participant {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 45px 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .clear-input {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            display: none;
+        }
+
+        .clear-input:hover {
+            color: #ff5252;
+        }
+
+        .add-btn {
+            padding: 12px 20px;
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .participants-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .participant {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .participant:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .participant-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lucky-icon {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .lucky-count {
+            background: #ff5252;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .winner-section {
+            margin-top: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .winner-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .winner-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            top: 0;
+            opacity: 0;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .wheel {
+                width: 300px;
+                height: 300px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VÒNG QUAY MAY MẮN</h1>
+            <p class="subtitle">Mỗi 30 giây sẽ có một người chơi nhận được lá x10 may mắn!</p>
+        </header>
+
+        <div class="content">
+            <div class="wheel-container">
+                <div class="wheel">
+                    <div class="pointer"></div>
+                    <div class="wheel-circle" id="wheel">
+                        <!-- Các mục trên vòng quay sẽ được thêm bằng JavaScript -->
+                    </div>
+                    <div class="wheel-center">QUAY</div>
+                </div>
+                
+                <div class="controls">
+                    <button class="spin-btn" id="spinBtn">QUAY NGAY</button>
+                    <button class="reset-btn" id="resetBtn">LÀM MỚI</button>
+                </div>
+            </div>
+
+            <div class="participants-container">
+                <div class="participants-header">
+                    <h2>DANH SÁCH NGƯỜI CHƠI</h2>
+                    <div class="timer">
+                        <span id="timerValue">30</span> giây
+                    </div>
+                </div>
+                
+                <div class="add-participant">
+                    <input type="text" id="participantName" placeholder="Nhập tên người chơi">
+                    <button class="clear-input" id="clearInputBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button class="add-btn" id="addBtn">THÊM</button>
+                </div>
+                
+                <div class="participants-list" id="participantsList">
+                    <!-- Danh sách người chơi sẽ được thêm bằng JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="winner-section">
+            <h2>NGƯỜI CHIẾN THẮNG</h2>
+            <div class="winner-display" id="winnerDisplay">
+                Chúc may mắn!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo biến và mảng
+        let participants = [];
+        let isSpinning = false;
+        let rotation = 0;
+        let timerValue = 30;
+        let timerInterval;
+        let luckyParticipant = null;
+
+        // DOM Elements
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const participantNameInput = document.getElementById('participantName');
+        const addBtn = document.getElementById('addBtn');
+        const clearInputBtn = document.getElementById('clearInputBtn');
+        const participantsList = document.getElementById('participantsList');
+        const winnerDisplay = document.getElementById('winnerDisplay');
+        const timerValueElement = document.getElementById('timerValue');
+
+        // Màu sắc cho các phần trên vòng quay
+        const colors = [
+            '#FF5252', '#FF9800', '#FFEB3B', '#4CAF50',
+            '#2196F3', '#9C27B0', '#E91E63', '#00BCD4'
+        ];
+
+        // Khởi tạo vòng quay
+        function initializeWheel() {
+            wheel.innerHTML = '';
+            const anglePerItem = 360 / participants.length;
+            
+            participants.forEach((participant, index) => {
+                const item = document.createElement('div');
+                item.className = 'wheel-item';
+                
+                // Tính toán góc cho mỗi mục
+                const startAngle = index * anglePerItem;
+                item.style.transform = `rotate(${startAngle}deg)`;
+                
+                // Tạo nội dung cho mục
+                const content = document.createElement('div');
+                content.className = 'wheel-item-content';
+                content.textContent = participant.name;
+                content.style.color = index % 2 === 0 ? 'white' : '#333';
+                
+                item.appendChild(content);
+                wheel.appendChild(item);
+            });
+        }
+
+        // Thêm người chơi
+        function addParticipant() {
+            const name = participantNameInput.value.trim();
+            if (name === '') {
+                alert('Vui lòng nhập tên người chơi!');
+                return;
+            }
+            
+            participants.push({
+                name: name,
+                luckyCount: 0
+            });
+            
+            participantNameInput.value = '';
+            clearInputBtn.style.display = 'none';
+            updateParticipantsList();
+            initializeWheel();
+        }
+
+        // Cập nhật danh sách người chơi
+        function updateParticipantsList() {
+            participantsList.innerHTML = '';
+            
+            participants.forEach((participant, index) => {
+                const participantElement = document.createElement('div');
+                participantElement.className = 'participant';
+                
+                const nameElement = document.createElement('div');
+                nameElement.className = 'participant-name';
+                
+                const icon = document.createElement('span');
+                icon.className = 'lucky-icon';
+                icon.innerHTML = '🍀';
+                
+                const nameText = document.createElement('span');
+                nameText.textContent = participant.name;
+                
+                nameElement.appendChild(icon);
+                nameElement.appendChild(nameText);
+                
+                const countElement = document.createElement('div');
+                countElement.className = 'lucky-count';
+                countElement.textContent = participant.luckyCount;
+                
+                participantElement.appendChild(nameElement);
+                participantElement.appendChild(countElement);
+                
+                participantsList.appendChild(participantElement);
+            });
+        }
+
+        // Quay vòng quay
+        function spinWheel() {
+            if (isSpinning || participants.length === 0) return;
+            
+            isSpinning = true;
+            spinBtn.disabled = true;
+            
+            // Tạo góc quay ngẫu nhiên (ít nhất 3 vòng)
+            const extraRotation = 360 * 5;
+            const randomAngle = Math.floor(Math.random() * 360);
+            rotation += extraRotation + randomAngle;
+            
+            // Áp dụng hiệu ứng quay
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            
+            // Tính người chiến thắng
+            setTimeout(() => {
+                const normalizedRotation = rotation % 360;
+                const anglePerItem = 360 / participants.length;
+                const winnerIndex = Math.floor((360 - normalizedRotation) / anglePerItem) % participants.length;
+                
+                const winner = participants[winnerIndex];
+                displayWinner(winner.name);
+                isSpinning = false;
+                spinBtn.disabled = false;
+                
+                // Tạo hiệu ứng confetti
+                createConfetti();
+            }, 4000);
+        }
+
+        // Hiển thị người chiến thắng
+        function displayWinner(winnerName) {
+            winnerDisplay.textContent = winnerName;
+            winnerDisplay.style.animation = 'none';
+            setTimeout(() => {
+                winnerDisplay.style.animation = 'pulse 2s infinite';
+            }, 10);
+        }
+
+        // Tạo hiệu ứng confetti
+        function createConfetti() {
+            const confettiCount = 100;
+            const container = document.body;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // Màu sắc ngẫu nhiên
+                const colors = ['#FF5252', '#FF9800', '#FFEB3B', '#4CAF50', '#2196F3', '#9C27B0'];
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Vị trí ngẫu nhiên
+                confetti.style.left = Math.random() * 100 + 'vw';
+                
+                // Kích thước ngẫu nhiên
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                // Animation ngẫu nhiên
+                const animationDuration = Math.random() * 3 + 2;
+                confetti.style.animation = `confetti-fall ${animationDuration}s linear forwards`;
+                
+                container.appendChild(confetti);
+                
+                // Xóa confetti sau khi animation kết thúc
+                setTimeout(() => {
+                    confetti.remove();
+                }, animationDuration * 1000);
+            }
+        }
+
+        // Bộ đếm thời gian
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timerValue--;
+                timerValueElement.textContent = timerValue;
+                
+                if (timerValue <= 0) {
+                    // Chọn người chơi may mắn
+                    selectLuckyParticipant();
+                    timerValue = 30;
+                }
+            }, 1000);
+        }
+
+        // Chọn người chơi may mắn
+        function selectLuckyParticipant() {
+            if (participants.length === 0) return;
+            
+            // Chọn ngẫu nhiên một người chơi
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            luckyParticipant = participants[randomIndex];
+            
+            // Tăng số lá may mắn
+            luckyParticipant.luckyCount += 10;
+            
+            // Hiển thị thông báo
+            winnerDisplay.textContent = `${luckyParticipant.name} nhận được 10 lá may mắn!`;
+            
+            // Cập nhật danh sách
+            updateParticipantsList();
+            
+            // Hiệu ứng confetti
+            createConfetti();
+            
+            // Reset thông báo sau 5 giây
+            setTimeout(() => {
+                if (!isSpinning) {
+                    winnerDisplay.textContent = 'Chúc may mắn!';
+                }
+            }, 5000);
+        }
+
+        // Làm mới vòng quay
+        function resetWheel() {
+            rotation = 0;
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            winnerDisplay.textContent = 'Chúc may mắn!';
+        }
+
+        // Xóa nội dung ô nhập
+        function clearInput() {
+            participantNameInput.value = '';
+            clearInputBtn.style.display = 'none';
+            participantNameInput.focus();
+        }
+
+        // Sự kiện
+        addBtn.addEventListener('click', addParticipant);
+        participantNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addParticipant();
+            }
+        });
+        
+        participantNameInput.addEventListener('input', () => {
+            if (participantNameInput.value.trim() !== '') {
+                clearInputBtn.style.display = 'block';
+            } else {
+                clearInputBtn.style.display = 'none';
+            }
+        });
+        
+        clearInputBtn.addEventListener('click', clearInput);
+        
+        spinBtn.addEventListener('click', spinWheel);
+        resetBtn.addEventListener('click', resetWheel);
+
+        // Khởi động bộ đếm thời gian
+        startTimer();
+
+        // Thêm một số người chơi mẫu
+        const sampleParticipants = [];
+        sampleParticipants.forEach(name => {
+            participants.push({
+                name: name,
+                luckyCount: 0
+            });
+        });
+        
+        updateParticipantsList();
+        initializeWheel();
+    </script>
+</body>
+</html>
